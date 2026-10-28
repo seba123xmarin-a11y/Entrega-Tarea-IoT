@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static l10n %}
+{% block title %}Mapa - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Mapa de puestas a tierra</h1>
+</div>
+<p class="hint">{{ located_devices }} de {{ total_devices }} elemento(s) (productos y dispositivos sueltos) tienen ubicación configurada.</p>
+
+{% if google_maps_api_key %}
+<div id="map-canvas" class="map-canvas map-canvas-large" data-markers='{{ markers_json }}'></div>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script src="{% static 'monitoring/js/map.js' %}"></script>
+<script>initDevicesMap();</script>
+{% else %}
+<div class="notice-box">
+  <h2>Configura tu API key de Google Maps</h2>
+  <p class="hint">Mientras tanto, aquí está la lista de elementos con ubicación configurada:</p>
+  <ol>
+    <li>Entra a <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>.</li>
+    <li>Crea o selecciona un proyecto y habilita <strong>Maps JavaScript API</strong>.</li>
+    <li>Crea una API key y restríngela por HTTP referrer (tu dominio o <code>localhost</code>).</li>
+    <li>Agrégala como <code>GOOGLE_MAPS_API_KEY</code> en tu <code>.env</code> y corre <code>docker compose up -d web</code>.</li>
+  </ol>
+</div>
+{% localize off %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>Nombre</th><th>Tipo</th><th>Propietario</th><th>Latitud</th><th>Longitud</th></tr>
+    </thead>
+    <tbody>
+      {% for m in markers %}
+      <tr>
+        <td>{{ m.name }}</td>
+        <td>{% if m.kind == "product" %}{{ m.product_type }}{% else %}Dispositivo suelto ({{ m.slug }}){% endif %}</td>
+        <td>{{ m.owner }}</td>
+        <td>{{ m.lat }}</td>
+        <td>{{ m.lng }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">Ningún elemento tiene ubicación configurada todavía.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endlocalize %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static l10n %}
+{% block title %}Ubicación de {{ product.name }} - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Ubicación: {{ product.name }}</h1>
+  <a class="btn-secondary" href="{% url 'monitoring:product-detail' product.pk %}">Volver a {{ product.name }}</a>
+</div>
+
+{% if not google_maps_api_key %}
+<div class="notice-box">
+  <h2>Configura tu API key de Google Maps</h2>
+  <p class="hint">Mientras tanto puedes guardar coordenadas manualmente abajo. Para activar el mapa interactivo:</p>
+  <ol>
+    <li>Entra a <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>.</li>
+    <li>Crea o selecciona un proyecto y habilita <strong>Maps JavaScript API</strong>.</li>
+    <li>Crea una API key y restríngela por HTTP referrer (tu dominio o <code>localhost</code>).</li>
+    <li>Agrégala como <code>GOOGLE_MAPS_API_KEY</code> en tu <code>.env</code> y corre <code>docker compose up -d web</code>.</li>
+  </ol>
+</div>
+{% else %}
+<p class="hint">Arrastra el marcador o haz click en el mapa para ubicar el producto.</p>
+<div id="map-canvas" class="map-canvas"></div>
+{% endif %}
+
+{% localize off %}
+<form class="form-box" method="post" id="location-form">
+  {% csrf_token %}
+  <div class="form-row">
+    <label for="id_latitude">Latitud</label>
+    <input type="number" step="any" name="latitude" id="id_latitude" value="{{ product.latitude|default_if_none:'' }}">
+  </div>
+  <div class="form-row">
+    <label for="id_longitude">Longitud</label>
+    <input type="number" step="any" name="longitude" id="id_longitude" value="{{ product.longitude|default_if_none:'' }}">
+  </div>
+  <button type="submit" class="btn">Guardar ubicación</button>
+</form>
+
+{% if google_maps_api_key %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script src="{% static 'monitoring/js/map.js' %}"></script>
+<script>
+  initLocationPicker({
+    latInputId: "id_latitude",
+    lngInputId: "id_longitude",
+    initialLat: {{ product.latitude|default_if_none:"null" }},
+    initialLng: {{ product.longitude|default_if_none:"null" }},
+    iconUrl: "{% if product.product_type.icon %}{{ product.product_type.icon.url }}{% elif site_branding.map_icon %}{{ site_branding.map_icon.url }}{% else %}{% static 'monitoring/img/ecs-mark.svg' %}{% endif %}"
+  });
+</script>
+{% endif %}
+{% endlocalize %}
+{% endblock %}

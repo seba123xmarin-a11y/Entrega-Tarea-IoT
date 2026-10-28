@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ product.name }}</h1>
+  <a class="btn-secondary" href="{% url 'monitoring:product-list' %}">Volver a productos</a>
+</div>
+
+<p class="hint">
+  Tipo: <strong>{{ product.product_type.name }}</strong> ·
+  {% if product.is_active %}Activo{% else %}Inactivo{% endif %} ·
+  <a href="{% url 'monitoring:product-location-edit' product.pk %}">
+    {% if product.has_location %}Editar ubicación{% else %}Configurar ubicación{% endif %}
+  </a>
+</p>
+
+{% if is_global %}
+<h2>Ícono en el Mapa</h2>
+<p class="hint">
+  Exclusivo de este producto (opcional). Si no subes uno, se usa el ícono de
+  su tipo (<strong>{{ product.product_type.name }}</strong>). Solo el rol
+  Global puede editarlo.
+</p>
+<div class="branding-preview">
+  {% if product.map_icon %}
+    <img src="{{ product.map_icon.url }}" alt="Ícono de {{ product.name }}" class="brand-logo-img">
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" action="{% url 'monitoring:product-icon-edit' product.pk %}" class="product-type-form">
+    {% csrf_token %}
+    {{ icon_form.icon }}
+    {% for error in icon_form.icon.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    <button type="submit" class="btn-secondary">Guardar</button>
+  </form>
+</div>
+{% endif %}
+
+<h2>Dispositivos</h2>
+{% if devices %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>ID</th>
+        <th>Sensores</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for device in devices %}
+      <tr>
+        <td>{{ device.name }}</td>
+        <td><code>{{ device.slug }}</code></td>
+        <td>{{ device.sensors.count }}</td>
+        <td><a href="{% url 'monitoring:device-provisioning' device.pk %}">Ver ID / token</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty-state">Este producto todavía no tiene un dispositivo.</p>
+{% endif %}
+<p><a class="btn-secondary" href="{% url 'monitoring:product-device-create' product.pk %}">+ Agregar dispositivo a este producto</a></p>
+
+{% if not devices %}
+<h2>Datos a mano</h2>
+<p class="hint">
+  Como este producto no tiene un dispositivo, registra aquí el estado a mano
+  (ej. "medición trimestral con telurómetro: 4.2 Ω, dentro de norma").
+</p>
+
+<form class="form-box" method="post" action="{% url 'monitoring:product-manual-entry-create' product.pk %}">
+  {% csrf_token %}
+  {% for field in manual_entry_form %}
+    <div class="form-row">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn">Registrar</button>
+</form>
+
+{% if manual_entries %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>Fecha</th><th>Nota</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      {% for entry in manual_entries %}
+      <tr>
+        <td>{{ entry.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ entry.note }}</td>
+        <td>{% if entry.value != None %}{{ entry.value }} {{ entry.unit }} ({{ entry.variable }}){% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty-state">Todavía no hay entradas registradas.</p>
+{% endif %}
+{% endif %}
+{% endblock %}
