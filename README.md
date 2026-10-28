@@ -11,3 +11,7 @@ VICTORIA CALDERON
 BARTOLOMÉ COZ CUEVAS
 
 SEBASTIÁN MARÍN CASTRO
+
+
+### 1. Repositorio clonado en cuenta personal
+![Repositorio clonado](githubclonado.png)
