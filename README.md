@@ -13,11 +13,11 @@ BARTOLOMÉ COZ CUEVAS
 SEBASTIÁN MARÍN CASTRO
 
 
-##.1 Repositorio clonado en cuenta personal
+##1. Repositorio clonado en cuenta personal
 ![Repositorio clonado](githubclonado.png)
 
 
-##.2 Dashoard acorde al proyecto a trabajar con logos y colores propios
+##2. Dashoard acorde al proyecto a trabajar con logos y colores propios
 ![Dashboard](captura_dashboard.png).
 
 ##3. Comunicación con sensores IoT en tiempo real
