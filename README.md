@@ -13,9 +13,9 @@ BARTOLOMÉ COZ CUEVAS
 SEBASTIÁN MARÍN CASTRO
 
 
-### 1. Repositorio clonado en cuenta personal
+##1. Repositorio clonado en cuenta personal
 ![Repositorio clonado](githubclonado.png)
 
 
 ### 2.Dashoard acorde al proyecto a trabajar con logos y colores propios
-!![Dashboard]Captura de pantalla 2026-10-28 172328.png
+!![Dashboard](Captura de pantalla 2026-10-28 172328.png).
