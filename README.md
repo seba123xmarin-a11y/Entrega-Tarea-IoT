@@ -18,3 +18,4 @@ SEBASTIÁN MARÍN CASTRO
 
 
 ### 2.Dashoard acorde al proyecto a trabajar con logos y colores propios
+!![Dashboard]Captura de pantalla 2026-10-28 172328.png
