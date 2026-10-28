@@ -20,5 +20,5 @@ SEBASTIÁN MARÍN CASTRO
 ##2. Dashoard acorde al proyecto a trabajar con logos y colores propios
 ![Dashboard](captura_dashboard.png).
 
-##3. Comunicación con sensores IoT en tiempo real
+##3. Comunicación entre la raspberry y el sensor
 ![Comunicacion](comunicacion.jpeg).
