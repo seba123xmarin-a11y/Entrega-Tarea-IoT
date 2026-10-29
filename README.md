@@ -19,7 +19,7 @@ SEBASTIÁN MARÍN CASTRO
 
 
 ##2. Dashoard acorde al proyecto a trabajar con logos y colores propios
-![Dashboard](dashboard2.pdf) 
+![Dashboard](dashboard2.pdf)
 
 ##3. Comunicación entre la raspberry y el sensor
 ![Comunicacion](comunicacion.jpeg)
