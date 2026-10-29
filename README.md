@@ -25,6 +25,6 @@ SEBASTIÁN MARÍN CASTRO
 ![Comunicacion](comunicacion.jpeg).
 
 
-## 5. Video funcionando en tiempo real
+##5. Video funcionando en tiempo real
 
  [Ver video del sistema funcionando](video_funcionando.mp4).
