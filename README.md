@@ -19,7 +19,7 @@ SEBASTIÁN MARÍN CASTRO
 
 
 ##2. Dashoard acorde al proyecto a trabajar con logos y colores propios
-![Dashboard](captura_dashboard.png) 
+![Dashboard](dashboard2.pdf) 
 
 ##3. Comunicación entre la raspberry y el sensor
 ![Comunicacion](comunicacion.jpeg)
@@ -27,6 +27,8 @@ SEBASTIÁN MARÍN CASTRO
 ##4. control de usuarios
 
 ![Usuario](ususraio_flow.png)
+
+![Usuario2](admin_flow.png)
 
 ##5. Video funcionando en tiempo real
 
