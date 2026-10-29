@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static l10n %}
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <a class="btn" href="{% url 'monitoring:device-create' %}">+ Agregar dispositivo</a>
+</div>
+
+{{ seed_data|json_script:"seed-data" }}
+
+<div id="dashboard-root" class="device-grid"
+     data-api-url="{% url 'monitoring:api-latest' %}"
+     data-command-url-template="{% url 'monitoring:sensor-command' 0 %}">
+  {% for device in devices %}
+    <section class="device-card" data-device-id="{{ device.id }}">
+      <header>
+        <h2>{{ device.name }}</h2>
+        <span class="badge" data-role="status-badge">sin datos</span>
+      </header>
+      {% if device.location %}<p class="location">{{ device.location }}</p>{% endif %}
+      <div class="sensor-grid">
+        {% for sensor in device.sensors.all %}
+          {% if sensor.is_active %}
+          {% with widget=sensor.get_widget %}
+          <div class="sensor-card" data-sensor-id="{{ sensor.id }}" data-widget-type="{{ widget.widget_type }}">
+            <div class="sensor-card-header">
+              <h3>{{ sensor.variable }} <span class="unit">{{ sensor.unit }}</span></h3>
+              <a class="gadget-config-link" href="{% url 'monitoring:sensor-widget-edit' sensor.id %}" title="Configurar gadget">⚙</a>
+            </div>
+
+            {% localize off %}
+            {% if widget.widget_type == "line_chart" %}
+              <div class="sensor-value" data-role="latest-value">--</div>
+              <canvas data-role="chart" height="120"></canvas>
+
+            {% elif widget.widget_type == "numeric" %}
+              <div class="sensor-value sensor-value-large" data-role="latest-value">--</div>
+
+            {% elif widget.widget_type == "meter" %}
+              <div class="sensor-value" data-role="latest-value">--</div>
+              <div class="meter-track">
+                <div class="meter-fill" data-role="meter-fill" data-min="{{ widget.min_value }}" data-max="{{ widget.max_value }}"></div>
+              </div>
+
+            {% elif widget.widget_type == "led" %}
+              <div class="led-row">
+                <span class="led-dot" data-role="led-dot" data-threshold="{{ widget.led_on_threshold }}"></span>
+                <span class="sensor-value" data-role="latest-value">--</span>
+              </div>
+
+            {% elif widget.widget_type == "button" %}
+              <button type="button" class="gadget-button" data-role="gadget-button"
+                      data-on-value="{{ widget.button_on_value }}" data-off-value="{{ widget.button_off_value }}">
+                --
+              </button>
+
+            {% elif widget.widget_type == "slider" %}
+              <div class="sensor-value" data-role="latest-value">--</div>
+              <input type="range" class="gadget-slider" data-role="gadget-slider"
+                     min="{{ widget.min_value }}" max="{{ widget.max_value }}" step="{{ widget.slider_step }}">
+            {% endif %}
+            {% endlocalize %}
+          </div>
+          {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+  {% empty %}
+    <p class="empty-state">
+      No hay dispositivos activos todavía.
+      <a href="{% url 'monitoring:device-create' %}">Agrega un sensor</a> para
+      obtener su ID y token, y prográmalo en el hardware.
+    </p>
+  {% endfor %}
+</div>
+
+<script src="{% static 'monitoring/js/dashboard.js' %}"></script>
+{% endblock %}

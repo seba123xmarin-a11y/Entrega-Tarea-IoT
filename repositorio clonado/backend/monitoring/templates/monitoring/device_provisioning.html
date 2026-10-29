@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Aprovisionar {{ device.name }} - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ device.name }}</h1>
+  <a class="btn-secondary" href="{% url 'monitoring:device-list' %}">Volver a dispositivos</a>
+</div>
+
+<p class="hint">
+  Programa estos valores en el firmware del hardware embebido. El token es
+  secreto: identifica a este dispositivo ante la plataforma y evita que
+  alguien más pueda hacerse pasar por él, aunque conozca la contraseña del
+  broker MQTT.
+</p>
+
+<div class="token-box">
+  <div class="token-row">
+    <span class="token-label">ID del dispositivo</span>
+    <code class="token-value" id="device-id-value">{{ device.slug }}</code>
+    <button type="button" class="btn-copy" data-copy-target="device-id-value">Copiar</button>
+  </div>
+  <div class="token-row">
+    <span class="token-label">Token</span>
+    <code class="token-value" id="device-token-value">{{ device.auth_token }}</code>
+    <button type="button" class="btn-copy" data-copy-target="device-token-value">Copiar</button>
+  </div>
+  <div class="token-row">
+    <span class="token-label">Topic MQTT</span>
+    <code class="token-value">{{ mqtt_topic_example }}</code>
+  </div>
+  <div class="token-row">
+    <span class="token-label">Nombre sugerido del AP de configuración</span>
+    <code class="token-value" id="ap-name-value">{{ suggested_ap_name }}</code>
+    <button type="button" class="btn-copy" data-copy-target="ap-name-value">Copiar</button>
+  </div>
+</div>
+
+<h2>Formato del mensaje MQTT</h2>
+<pre class="code-block">{
+  "value": 4.8,
+  "timestamp": "2026-07-10T12:00:00Z",
+  "token": "{{ device.auth_token }}"
+}</pre>
+<p class="hint">
+  Publica un mensaje por variable en <code>{{ mqtt_topic_example }}</code>
+  (ej. <code>ecs/{{ device.slug }}/resistencia_tierra</code>). El campo
+  <code>timestamp</code> es opcional. Cada variable nueva que publiques
+  aparece automáticamente como sensor en el dashboard.
+</p>
+
+<h2>WiFi del hardware</h2>
+<p class="hint">
+  El SSID y la contraseña de tu red WiFi, y el nombre del punto de acceso de
+  configuración del propio dispositivo (sugerido arriba), se ingresan
+  directamente en el hardware durante su aprovisionamiento — la plataforma no
+  los almacena.
+</p>
+
+<form method="post" action="{% url 'monitoring:device-regenerate-token' device.pk %}" onsubmit="return confirm('El token actual dejará de funcionar. ¿Continuar?');">
+  {% csrf_token %}
+  <button type="submit" class="btn-danger">Regenerar token</button>
+</form>
+
+<script>
+document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    const el = document.getElementById(btn.dataset.copyTarget);
+    navigator.clipboard.writeText(el.textContent.trim()).then(function () {
+      const original = btn.textContent;
+      btn.textContent = 'Copiado';
+      setTimeout(function () { btn.textContent = original; }, 1500);
+    });
+  });
+});
+</script>
+{% endblock %}

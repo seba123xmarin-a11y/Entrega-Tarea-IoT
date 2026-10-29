@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}{{ target.username }} - {{ block.super }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ target.username }}</h1>
+  <a class="btn-secondary" href="{% url 'monitoring:user-list' %}">Volver a usuarios</a>
+</div>
+
+<p class="hint">
+  Rol: <strong>{{ role_label }}</strong> ·
+  {% if target.is_active %}Activo{% else %}Inactivo{% endif %} ·
+  Correo: {{ target.email|default:"—" }} ·
+  Alta: {{ target.date_joined|date:"Y-m-d" }}
+</p>
+
+{% if target != request.user %}
+<form method="post" action="{% url 'monitoring:user-toggle-active' target.pk %}"
+      onsubmit="return confirm('{% if target.is_active %}¿Desactivar{% else %}¿Activar{% endif %} a {{ target.username }}?');">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{% url 'monitoring:user-detail' target.pk %}">
+  <button type="submit" class="btn-secondary">{% if target.is_active %}Desactivar usuario{% else %}Activar usuario{% endif %}</button>
+</form>
+{% endif %}
+
+<h2>Productos ({{ products_count }})</h2>
+{% if products %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.product_type.name }}</td>
+        <td>{% if product.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+        <td>
+          <a href="{% url 'monitoring:product-detail' product.pk %}">Ver</a> ·
+          <form method="post" action="{% url 'monitoring:product-toggle-active' product.pk %}"
+                onsubmit="return confirm('{% if product.is_active %}¿Desactivar{% else %}¿Activar{% endif %} «{{ product.name }}»?');"
+                style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'monitoring:user-detail' target.pk %}">
+            <button type="submit" class="btn-secondary">{% if product.is_active %}Desactivar{% else %}Activar{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty-state">Este usuario todavía no tiene productos.</p>
+{% endif %}
+
+<h2>Sensores ({{ sensors_active_count }} activos de {{ sensors_count }})</h2>
+{% if sensors %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Dispositivo</th>
+        <th>Variable</th>
+        <th>Unidad</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sensor in sensors %}
+      <tr>
+        <td>{{ sensor.device.name }}</td>
+        <td>{{ sensor.variable }}</td>
+        <td>{{ sensor.unit|default:"—" }}</td>
+        <td>{% if sensor.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+        <td>
+          <form method="post" action="{% url 'monitoring:sensor-toggle-active' sensor.pk %}"
+                onsubmit="return confirm('{% if sensor.is_active %}¿Desactivar{% else %}¿Activar{% endif %} el sensor «{{ sensor.variable }}» de «{{ sensor.device.name }}»?');">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'monitoring:user-detail' target.pk %}">
+            <button type="submit" class="btn-secondary">{% if sensor.is_active %}Desactivar{% else %}Activar{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty-state">Este usuario todavía no tiene sensores.</p>
+{% endif %}
+{% endblock %}
