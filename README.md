@@ -22,3 +22,8 @@ SEBASTIÁN MARÍN CASTRO
 
 ##3. Comunicación entre la raspberry y el sensor
 ![Comunicacion](comunicacion.jpeg).
+
+
+## 5. Video funcionando en tiempo real
+
+ [Ver video del sistema funcionando](video funcionando.m
