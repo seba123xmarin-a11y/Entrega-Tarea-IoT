@@ -26,4 +26,4 @@ SEBASTIÁN MARÍN CASTRO
 
 ## 5. Video funcionando en tiempo real
 
- [Ver video del sistema funcionando](video funcionando.m
+ [Ver video del sistema funcionando](video_funcionando.mp4).
